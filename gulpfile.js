@@ -21,24 +21,25 @@ const browsers = [
 gulp.task('jshint', function(){
     gulp.src('js/*.js')
     .pipe(plugins.jshint())
-    //.pipe(plugins.jshint.reporter('default'));//输出结果
-    console.log('检查脚本完毕！');
+    .pipe(plugins.jshint.reporter('default'))//输出结果
+    .pipe(plugins.notify({message: '检查脚本完毕!'}))
+
 })
 //压缩脚本
 gulp.task('script', function(){
     gulp.src(['js/*.js', '!js/*.min.js'])
     .pipe(plugins.uglify())
     .pipe(plugins.rename({suffix: '.min'}))
-    .pipe(gulp.dest('js'));
-    console.log('压缩js完毕！');
+    .pipe(gulp.dest('js'))
+    .pipe(plugins.notify({message: '压缩js成功!'}))
 })
 //压缩css
 gulp.task('minify-css', function(){
     gulp.src(['css/*.css', '!css/*.min.css'])
     .pipe(plugins.minifyCss())
     .pipe(plugins.rename({suffix: '.min'}))
-    .pipe(gulp.dest('css'));
-    console.log('压缩css完毕！');
+    .pipe(gulp.dest('css'))
+    .pipe(plugins.notify({message: '压缩css完毕！'}))
 })
 //编译sass
 gulp.task('compile-sass', function(){
@@ -52,13 +53,12 @@ gulp.task('compile-sass', function(){
     .pipe(gulp.dest('css'))
     .pipe(plugins.notify({message: 'compile sass success!'}))
 })
-gulp.task('watch-sass', () => {
-    gulp.watch('sass/*.+(sass|scss)', ['compile-sass']);
-})
+
 //监听
 gulp.task('watch', function(){
     var watcher1 = gulp.watch('js/*.js', ['jshint', 'script']);
-    gulp.watch('css/index.css', ['minify-css']);
+    gulp.watch('sass/*', ['compile-sass']);
+    gulp.watch('css/*', ['minify-css']);
     watcher1.on('change', function(event){
         //event.type==deleted时处理删除情况
         console.log('File '+event.path + 'was' + event.type + ', running tasks...');
@@ -71,5 +71,4 @@ gulp.task('watch', function(){
 // });
 gulp.task('default', function(){
     gulp.run('jshint', 'script', 'watch');
-    console.log('Starting...')
 });
